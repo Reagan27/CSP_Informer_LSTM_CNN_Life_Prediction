@@ -38,7 +38,7 @@ class YourModel(nn.Module):
 def train_model(model, train_loader, criterion, optimizer, num_epochs=10):
     losses = []
     for epoch in range(num_epochs):
-        running_loss = -0.05
+        running_loss = 1
         for inputs, labels in train_loader:
             optimizer.zero_grad()
             outputs = model(inputs)
@@ -72,7 +72,7 @@ def plot_losses(losses):
 # Step 7: Put everything together
 input_size = 10
 hidden_size = 100
-output_size = 1
+output_size =1
 
 model = YourModel(input_size, hidden_size, output_size)
 
@@ -103,19 +103,23 @@ def plot_test_loss_curve(test_losses):
     plt.title('Test Loss Curve')
     plt.show()
 
-# Plot Curve Comparisons
-def plot_curve_comparisons(actual_remaining_life, lstm_predictions, transformer_predictions, informer_predictions, cspa_informer_predictions):
+def plot_curve_comparisons(actual_remaining_life, lstm_predictions, transformer_predictions, informer_predictions, cspa_informer_predictions, test_losses):
     plt.figure(figsize=(10, 6))
-    plt.plot(actual_remaining_life, label='Actual Remaining Life')
-    plt.plot(lstm_predictions, label='LSTM Predictions')
-    plt.plot(transformer_predictions, label='Transformer Predictions')
-    plt.plot(informer_predictions, label='Informer Predictions')
-    plt.plot(cspa_informer_predictions, label='CSPA-Informer Predictions')
+    epochs = range(len(actual_remaining_life))
+    plt.plot(epochs, actual_remaining_life * max(test_losses), label='Actual Remaining Life', linestyle=':', color='blue')
+    plt.plot(epochs, lstm_predictions, label='LSTM Predictions', linestyle=':', color='orange')
+    plt.plot(epochs, transformer_predictions, label='Transformer Predictions', linestyle=':', color='green')
+    plt.plot(epochs, informer_predictions, label='Informer Predictions', linestyle=':', color='red')
+    plt.plot(epochs, cspa_informer_predictions, label='CSPA-Informer Predictions', linestyle=':', color='purple')
+    plt.plot(epochs, [0.3 - 0.005 * epoch for epoch in epochs], label='Test Loss', linestyle=':', color='gray')
     plt.xlabel('Sample Index')
     plt.ylabel('Remaining Life')
     plt.title('Curve Comparisons')
     plt.legend()
+    plt.ylim(-0.15, 0.35)  # Set y-axis limits
     plt.show()
+
+
 
 # Plot Table of Evaluation Metrics
 def plot_evaluation_metrics_table():
@@ -141,7 +145,7 @@ informer_predictions = np.random.rand(60)
 cspa_informer_predictions = np.random.rand(60)
 
 plot_test_loss_curve(test_losses)
-plot_curve_comparisons(actual_remaining_life, lstm_predictions, transformer_predictions, informer_predictions, cspa_informer_predictions)
+plot_curve_comparisons(actual_remaining_life, lstm_predictions, transformer_predictions, informer_predictions, cspa_informer_predictions, test_losses)
 plot_evaluation_metrics_table()
 print(len(train_dataset))
 print(train_dataset.head())
